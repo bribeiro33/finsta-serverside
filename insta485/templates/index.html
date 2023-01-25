@@ -1,0 +1,45 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+    <title>insta485</title>
+</head>
+<body>
+    <header>
+        <a href="/">
+          <img src="/images/logo.png" alt="black and white instagram logo">
+        </a>
+        <a href="/explore/">explore</a>
+        <a href="/users/{{logname}}/">{{logname}}</a>
+      </header>
+    
+    {% for post in posts %}
+      <div class="post">
+          <div class="post-header">
+            <img class="icon" src="{{post.owner_img_url}}" alt="user image"/>
+            <a href="/users/{{post.owner}}/">{{post.owner}}</a>
+            <a href="/posts/{{post.postid}}/">{{post.timestamp}}</a>
+          </div>
+          <img class="post-img" src="{{post.img_url}}" alt="post image"/>
+          <div class="post-feedback">
+            {% if post.likes == 1 %}
+              <p>1 like</p>
+            {% else %}
+              <p>{{post.likes}} likes</p>
+            {% endif %}
+            
+            {% for comment in post.comments %}
+              <p><a href="/users/{{comment.owner}}/"><b>{{comment.owner}}</b></a> {{comment.text}}</p>
+            {% endfor %}
+          </div>
+        </div>
+    {% endfor %}
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+  Hello world!
+</html>
