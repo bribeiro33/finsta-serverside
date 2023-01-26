@@ -3,10 +3,11 @@
 
 # Stop on errors
 set -Eeuo pipefail
+set -x
 
 # If var/insta485.sqlite3 does not exist, print an error and exit non-zero.
 FILE=var/insta485.sqlite3
-if [ ! -e "$FILE" ]; then
+if [ ! -f "$FILE" ]; then
 	echo "Error: can't find database var/insta485.sqlite3"
 	echo "Try: ./bin/insta485db create"
 	exit 1

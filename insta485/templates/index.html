@@ -34,12 +34,32 @@
             {% for comment in post.comments %}
               <p><a href="/users/{{comment.owner}}/"><b>{{comment.owner}}</b></a> {{comment.text}}</p>
             {% endfor %}
+
           </div>
         </div>
     {% endfor %}
 </body>
 </html> -->
+<!-- <!DOCTYPE html>
+<html lang="en">
+<body>
+  <h1>Users</h1>
+  {% for user in users %}
+  <p>{{user.username}} {{user.fullname}}</p>
+  {% endfor %}
+</body>
+</html> -->
 <!DOCTYPE html>
 <html lang="en">
-  Hello world!
+<body>
+  <h1>Posts</h1>
+    {% for post in posts %}
+    <p>{{post.postid}} {{post.img_url}} {{post.owner}} {{post.created}} {{post.timestamp}}</p>
+    <p>{{post.owner_img_url}}</p>
+    {% for comment in post.comments %}
+      <p>{{comment.owner}} {{comment.text}}</p>
+      {% endfor %}
+    {% endfor %}
+</body>
 </html>
+

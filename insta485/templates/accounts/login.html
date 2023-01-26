@@ -1,0 +1,16 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head><title>insta485</title></head>
+<body>
+    <a href="/">Home</a> <!-- might not need "Home"-->
+    <form action="/accounts/?target={{url_for('show_index')}}>" method="post" enctype="multipart/form-data">
+        <input type="text" name="username" required/>
+        <input type="password" name="password" required/>
+        <input type="submit" value="login"/>
+        <input type="hidden" name="operation" value="login"/>
+    </form>
+    <a href="/accounts/create/" target="_blank">Don't have an account?
+        create one here!"
+    </a>
+</html>
