@@ -1,4 +1,4 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
@@ -10,7 +10,7 @@
 <body>
     <header>
         <a href="/">
-          <img src="/images/logo.png" alt="black and white instagram logo">
+          <img src="/static/images/logo.png" alt="black and white instagram logo">
         </a>
         <a href="/explore/">explore</a>
         <a href="/users/{{logname}}/">{{logname}}</a>
@@ -35,11 +35,31 @@
               <p><a href="/users/{{comment.owner}}/"><b>{{comment.owner}}</b></a> {{comment.text}}</p>
             {% endfor %}
 
+            {% if post.user_likes_it %}
+              <form action="/likes/?target=/index.html" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="operation" value="unlike"/>
+                <input type="hidden" name="postid" value="<FIXME_POST_ID_HERE>"/>
+                <input type="submit" name="unlike" value="unlike"/>
+              </form>
+
+            {% else %}
+              <form action="/likes/?target=/index.html" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="operation" value="like"/>
+                <input type="hidden" name="postid" value="<FIXME_POST_ID_HERE>"/>
+                <input type="submit" name="like" value="like"/>
+              </form>
+            {% endif %}
+            <form action="/comments/?target=/index.html>" method="post" enctype="multipart/form-data">
+              <input type="hidden" name="operation" value="create"/>
+              <input type="hidden" name="postid" value="<FIXME_POST_ID_HERE>"/>
+              <input type="text" name="text" required/>
+              <input type="submit" name="comment" value="comment"/>
+            </form>
           </div>
         </div>
     {% endfor %}
 </body>
-</html> -->
+</html>
 <!-- <!DOCTYPE html>
 <html lang="en">
 <body>
@@ -49,17 +69,23 @@
   {% endfor %}
 </body>
 </html> -->
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <body>
   <h1>Posts</h1>
     {% for post in posts %}
-    <p>{{post.postid}} {{post.img_url}} {{post.owner}} {{post.created}} {{post.timestamp}}</p>
-    <p>{{post.owner_img_url}}</p>
-    {% for comment in post.comments %}
-      <p>{{comment.owner}} {{comment.text}}</p>
+      <p>{{post.postid}} {{post.img_url}} {{post.owner}} {{post.created}} {{post.timestamp}}</p>
+      <p>{{post.owner_img_url}}</p>
+      <p>{{post.likes}} number of likes</p>
+      {% if post.user_likes_it %}
+        <p>User likes the post</p>
+      {% else %}
+        <p> User doesn't like the post</p>
+      {% endif %}
+      {% for comment in post.comments %}
+        <p>{{comment.owner}} {{comment.text}}</p>
       {% endfor %}
-    {% endfor %}
+    {% endfor %}  
 </body>
-</html>
+</html> -->
 
