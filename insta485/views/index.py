@@ -28,10 +28,10 @@ def show_index():
     """Display / route."""
 
     # Check if user's logged in, go to log in page if not
-    user = session.get('user')
-    if user is None: 
+    if "user" not in session: 
         return redirect(url_for("is_logged"))
 
+    user = session["user"]
     # Connect to database
     connection = insta485.model.get_db()
 
@@ -178,7 +178,7 @@ def logout():
 @insta485.app.route('/accounts/create', methods=['GET'])
 def create_account():
     #TODO: ALL OF IT
-    return render_template("login.html")
+    return render_template("login.html") 
 
 @insta485.app.route('/accounts/', methods=['POST'])
 def post_accounts():
