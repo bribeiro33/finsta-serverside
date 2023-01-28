@@ -11,9 +11,20 @@
         <a href="/">
             <img src="/static/images/logo.png" alt="black and white instagram logo">
         </a>
+        <p><a href="/">explore</a></p>
+        <!--TODO: Fix later-->
+        <p><a href="/">Username</a></p>
     </header>
     <div>
-        <p>edit</p>
+        <form action="/accounts/?target=<" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept="image/*"/>
+            <input type="text" name="fullname" value="{{user.fullname}}" required/>
+            <input type="text" name="email" value="{{user.email}}" required/>
+            <input type="submit" name="update" value="submit"/>
+            <input type="hidden" name="operation" value="edit_account"/>
+        </form>
     </div>
+    <p><a href="/">Change password</a></p>
+    <p><a href="/">Delete Account</a></p>
 </body>
 </html>

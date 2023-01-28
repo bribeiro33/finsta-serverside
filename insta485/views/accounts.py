@@ -86,6 +86,7 @@ def logout():
 # Renders the create an account page, redirect to edit if logged in
 @insta485.app.route('/accounts/create', methods=['GET'])
 def create_page():
+    """GET create account page"""
     if "user" in session:
         redirect(url_for('edit.html'))
     return render_template('create.html') 
@@ -147,6 +148,34 @@ def create_account():
     # Log new user in, set session cookie
     session['user'] = username
 
+# ============================ Edit =====================================
+# Renders the edit your account page, redirect to edit if logged in
+@insta485.app.route('/accounts/edit', methods=['GET'])
+def edit_page():
+    """GET edit account page"""
+    # Query db for logged in user's current info
+    connection = insta485.model.get_db()
+    cur_user = connection.execute(
+        "SELECT username, fullname, email, filename "
+        "FROM users "
+        "WHERE username == ?",
+        (session['user'], )
+    )
+    user_profile = cur_user.fetchone()
+    if not user_profile:
+        abort(403)
+    
+    # Fix file path to work w/ flask
+    user_profile['filename'] = flask.url_for("file_url", filename=user_profile['filename'])
+
+    context = {"user": user_profile}
+    return render_template('edit.html', **context)
+
+def edit_account():
+    """POST edits to user's account"""
+    if "user" not in session: 
+        abort(403)
+    
 
 # Various post requests from accounts with operation values 
 @insta485.app.route('/accounts/', methods=['POST'])
@@ -155,9 +184,10 @@ def post_accounts():
     operation = request.values.get('operation')
     if operation == "login":
         login()
-    
-    if operation == "create":
+    elif operation == "create":
         create_account()
+    elif operation == "edit_account":
+        edit_account()
     else:
         return redirect(url_for('show_index'))
     
