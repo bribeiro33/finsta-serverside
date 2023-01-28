@@ -58,8 +58,7 @@ def close_db(error):
 @insta485.app.route('/uploads/<path:filename>')
 def file_url(filename):
     """Return correct picture filepath"""
-    #if 'username' in flask.session:
-    #TODO check file permissions, cookies
+    if "user" not in flask.session:
+        flask.abort(404)
     return flask.send_from_directory(insta485.app.config['UPLOAD_FOLDER'],
                                          filename, as_attachment=True)
-    flask.abort(404)

@@ -87,3 +87,83 @@ def post_page(postid_url_slug):
 
     post['logname'] = user
     return render_template("post.html", **post)
+
+def post_create():
+    """POST a new post"""
+    # Abort (backup) if user not logged in
+    if "user" not in session:
+        abort(403)
+    
+    connection = insta485.model.get_db()
+    file_obj = flask.request.files["file"]
+    # Abort if no file was submitted
+    if not file_obj: 
+        abort(400)
+    
+    # Format new post pic
+    # Unpack flask obj
+    filename = file_obj.filename
+
+    # Compute base name
+    stem = uuid.uuid4().hex
+    suffix = pathlib.Path(filename).suffix.lower()
+    uuid_basename = f"{stem}{suffix}"
+
+    # Save to disk
+    path = insta485.app.config["UPLOAD_FOLDER"]/uuid_basename
+    file_obj.save(path)
+
+    # Insert into database
+    connection.execute(
+        "INSERT INTO "
+        "posts(filename, owner) "
+        "VALUES (?,?)",
+        (uuid_basename, session['user'], )
+    )
+
+def post_delete():
+    """POST a post deletion"""
+    # Abort (backup) if user not logged in
+    if "user" not in session:
+        abort(403)
+    
+    # Get postid of desired post from form
+    postid = flask.request.form['postid']
+
+    # Get post owner and filename from db
+    connection = insta485.model.get_db()
+    cur_file = connection.execute(
+        "SELECT owner, filename "
+        "FROM post "
+        "WHERE post_id = ?",
+        (postid, )
+    )
+    post = cur_file.fetchone()
+
+    # Verify that user logged in is the post's owner
+    if session['user'] != post['owner']:
+        abort(403)
+
+    # Delete post_img's file
+    filename = post['filename']
+    filepath = insta485.app.config["UPLOAD_FOLDER"]/filename
+    os.remove(filepath)
+    
+    # Remove post from database
+    connection.execute(
+        "DELETE "
+        "FROM posts "
+        "WHERE postid = ?",
+        (postid, )
+    )
+
+@insta485.app.route('/posts/', methods=['POST'])
+def post_action():
+    """POST possible post actions - create, delete"""
+    operation = request.values.get('operation')
+    if operation == 'create':
+        post_create()
+    elif operation == 'delete':
+        post_delete()
+    else:
+        return redirect(url_for('user_page'))

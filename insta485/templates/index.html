@@ -30,7 +30,7 @@
             {% else %}
               <p>{{post.likes}} likes</p>
             {% endif %}
-            
+
             {% for comment in post.comments %}
               <p><a href="/users/{{comment.owner}}/"><b>{{comment.owner}}</b></a> {{comment.text}}</p>
             {% endfor %}
@@ -49,6 +49,7 @@
                 <input type="submit" name="like" value="like"/>
               </form>
             {% endif %}
+
             <form action="/comments/?target=/index.html>" method="post" enctype="multipart/form-data">
               <input type="hidden" name="operation" value="create"/>
               <input type="hidden" name="postid" value="{{post.postid}}"/>
