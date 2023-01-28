@@ -1,5 +1,5 @@
 """
-Insta485 followers view.
+Insta485 following view.
 
 
 URLs include:
@@ -21,10 +21,10 @@ def file_url(filename):
                                          filename, as_attachment=True)
     flask.abort(404)
 
-#same as following.py
-@insta485.app.route('/users/<user_url_slug>/followers/', methods=["GET"])
-def show_followers(user_url_slug):
-    """Display followers route."""
+#same as followers.py
+@insta485.app.route('/users/<user_url_slug>/following/', methods=["GET"])
+def show_following(user_url_slug):
+    """Display following route."""
 
     # Check if user's logged in, go to log in page if not
     if "user" not in session: 
@@ -42,9 +42,6 @@ def show_followers(user_url_slug):
         [user_url_slug]
     )
 
-     #dawg i have no idea what is going on and i am not exaggerating when 
-    # I say ive been working for multiple hours and feeling like a friggin 
-    # fool i havent been able to write a single full file
 
     #loop through all followers
     f = cur.fetchall()
@@ -57,7 +54,7 @@ def show_followers(user_url_slug):
             "WHERE username1=? AND username2=?",
             [user, fol['username']]
         )
-
+        
         #not super sure how i feel abt this logic, I was trying to go based on accounts.py
         name = cur.fetchone()
         #if user is empty, then abort
@@ -68,6 +65,6 @@ def show_followers(user_url_slug):
         else:
             fol['logname_follows_username'] = False
 
-    context = {'followers': f, 
+    context = {'following': f, 
         "username": user_url_slug}
-    return render_template("followers.html", **context)
+    return render_template("following.html", **context)
