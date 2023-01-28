@@ -32,9 +32,9 @@ def show_followers(user_url_slug):
         "SELECT username "
         "FROM users "
         "WHERE username = ?",
-        (user_url_slug)
+        (user_url_slug, )
     )
-    dawg = cur.fetchone()
+    dawg = cur_user.fetchone()
     if not dawg:
         abort(404)
 
@@ -43,7 +43,7 @@ def show_followers(user_url_slug):
         "SELECT username1 "
         "FROM following "
         "WHERE username2=?",
-        (user_url_slug)
+        (user_url_slug, )
     )
     #username1 follows username2
     #the above gets all the rows of column 'username1' where username1 follows the user
@@ -51,6 +51,7 @@ def show_followers(user_url_slug):
     #loop through all followers [{username1: golpari, username2: bdreyer}, {username1:bdreyer. username2: golpari}]
     f = cur.fetchall()
     for fol in f:
+        # Formatting to fit into template name
         fol['username'] = fol['username1']
         
         # Check if user follows the people in the followers list
@@ -58,7 +59,7 @@ def show_followers(user_url_slug):
             "SELECT username2 "
             "FROM following "
             "WHERE username1=? AND username2=?",
-            (user, fol['username'])
+            (user, fol['username'], )
         )
 
         name = cur.fetchone()['username2']
@@ -66,6 +67,16 @@ def show_followers(user_url_slug):
             fol['logname_follows_username'] = True
         else:
             fol['logname_follows_username'] = False
+
+        # Get icon 
+        cur_icon = connection.execute(
+            "SELECT filename "
+            "FROM users "
+            "WHERE username=?",
+            (fol['username'], )
+        )
+        fol['user_img_url'] = flask.url_for("file_url", filename=cur_icon.fetchone()['filename'])
+
 
     context = {'followers': f, 
         "username": user_url_slug}
