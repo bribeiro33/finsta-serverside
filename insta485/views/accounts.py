@@ -70,6 +70,9 @@ def login():
     # Set session cookie w/ username
     session['user'] = username
 
+    target_url = request.args.get('target')
+    type(target_url)
+
 # Can't be in post_accounts because no target arg
 @insta485.app.route('/accounts/logout/', methods=["POST"])
 def logout():
@@ -194,13 +197,13 @@ def edit_account():
         "UPDATE users "
         "SET fullname = ?, email = ? "
         "WHERE username = ?",
-        (session['user'], )
+        (full_name, email, session['user'], )
     )
 
     # Update profile pic if submitted
     if file_obj:
         # Delete old profile pic 
-        cur_oldfile = connection.session(
+        cur_oldfile = connection.execute(
             "SELECT filename "
             "FROM users "
             "WHERE username = ?",
@@ -316,7 +319,7 @@ def edit_password_account():
     connection = insta485.model.get_db()
     cur_pass = connection.execute(
         "SELECT password "
-        "FROM user "
+        "FROM users "
         "WHERE username = ?",
         (session['user'], )
     )
@@ -380,5 +383,9 @@ def post_accounts():
         return redirect(url_for('show_index'))
     
     # Redirect to what target arg equals in from's action URL 
-    target = request.args.get('target')
-    return redirect(target)
+    target_url = request.args.get('target')
+
+    # For whatever reason, when ?target=/, target evaluates to None
+    if not target_url:
+        target_url = "/"
+    return redirect(target_url)

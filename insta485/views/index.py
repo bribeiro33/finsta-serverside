@@ -13,13 +13,14 @@ import flask
 from flask import (session, redirect, url_for, render_template, request, abort)
 import insta485
 
-@insta485.app.route('/uploads/<path:filename>')
-def file_url(filename):
-    """Return picture."""
-    #if 'username' in flask.session:
-    return flask.send_from_directory(insta485.app.config['UPLOAD_FOLDER'],
-                                         filename, as_attachment=True)
-    flask.abort(404)
+# @insta485.app.route('/uploads/<path:filename>')
+# def file_url(filename):
+#     """Return picture."""
+#     #if 'username' in flask.session:
+#     #TODO check file permissions, cookies
+#     return flask.send_from_directory(insta485.app.config['UPLOAD_FOLDER'],
+#                                          filename, as_attachment=True)
+#     flask.abort(404)
 
 @insta485.app.route('/')
 def show_index():
@@ -57,7 +58,7 @@ def show_index():
         # Correct timestamp format
         post['timestamp'] = arrow.get(post['created']).humanize()
 
-        # GET post's owner's icon url
+        # Query post's owner's icon url
         cur_owner = connection.execute(
             "SELECT filename "
             "FROM users "
@@ -66,7 +67,7 @@ def show_index():
         )
         post['owner_img_url'] = flask.url_for("file_url", filename=cur_owner.fetchone()['filename'])
 
-        # GET comments
+        # Query comments
         cur_comments = connection.execute(
             "SELECT commentid, owner, postid, text "
             "FROM comments "
@@ -76,7 +77,7 @@ def show_index():
         )
         post['comments'] = cur_comments.fetchall()
 
-        # GET likes
+        # Query likes
         cur_likes = connection.execute(
             "SELECT COUNT(owner) AS num_likes "
             "FROM likes "
@@ -86,7 +87,7 @@ def show_index():
 
         post['likes'] = cur_likes.fetchone()['num_likes']
 
-        # GET if user likes the post
+        # Query if user likes the post
         cur_user_likes = connection.execute(
             "SELECT owner "
             "FROM likes "

@@ -54,3 +54,12 @@ def close_db(error):
     if sqlite_db is not None:
         sqlite_db.commit()
         sqlite_db.close()
+
+@insta485.app.route('/uploads/<path:filename>')
+def file_url(filename):
+    """Return correct picture filepath"""
+    #if 'username' in flask.session:
+    #TODO check file permissions, cookies
+    return flask.send_from_directory(insta485.app.config['UPLOAD_FOLDER'],
+                                         filename, as_attachment=True)
+    flask.abort(404)
