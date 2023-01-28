@@ -27,7 +27,7 @@ def show_index():
 
     # Check if user's logged in, go to log in page if not
     if "user" not in session: 
-        return redirect(url_for("is_logged"))
+        return redirect(url_for("login_page"))
 
     user = session["user"]
     # Connect to database

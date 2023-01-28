@@ -13,11 +13,13 @@ URLs include:
 import flask
 from flask import (session, redirect, url_for, render_template, request, abort)
 import uuid
+import pathlib
 import hashlib
 import insta485
 
+# ============================ Login/out ===================================
 @insta485.app.route('/accounts/login/', methods=["GET"])
-def is_logged():
+def login_page():
     """GET if user logged in and login page"""
 
     # If user is logged in, redirect to home/index
@@ -45,7 +47,6 @@ def login():
         "WHERE username = ?",
         (username, )
     )
-
     correct_pass = cur_users.fetchone()
     
     # If username doesn't have a password, abort
@@ -68,30 +69,95 @@ def login():
     # Set session cookie w/ username
     session['user'] = username
 
-# Can't be in post_accounts because not allowed to modify logout: name=operation
+# Can't be in post_accounts because no target arg
 @insta485.app.route('/accounts/logout/', methods=["POST"])
 def logout():
     """POST logout of account request"""
     user = session.get('user')
     
-    # Error somehwere if user is not logged in, safety
+    # Error somehwere if user is not logged in here, safety
+    # Clears cookies
     if user:
         session.clear()
         
-    return redirect(url_for('is_logged'))
+    return redirect(url_for('login_page'))
 
+# ============================ Create =====================================
+# Renders the create an account page, redirect to edit if logged in
 @insta485.app.route('/accounts/create', methods=['GET'])
-def create_account():
-    #TODO: ALL OF IT
-    return render_template("login.html") 
+def create_page():
+    if "user" in session:
+        redirect(url_for('edit.html'))
+    return render_template('create.html') 
 
+def create_account():
+    """POST created account"""
+    # Get information from form on create page
+    username = request.form['username']
+    password = request.form['password']
+    full_name = request.form['fullname']
+    email = request.form['email']
+    file_obj = request.files['file']
+
+    # If something hasn't been filled out, abort
+    if not(username and password and full_name and email and file_obj):
+        abort(400)
+    
+    # If username already exists, abort
+    connection = insta485.model.get_db()
+    cur_users = connection.execute(
+        "SELECT username "
+        "FROM users "
+        "WHERE username == ?",
+        (username, )
+    )
+    if cur_users.fetchone():
+        abort(409)
+
+    # Hash password to store securley
+    algorithm = 'sha512'
+    salt = uuid.uuid4().hex
+    hash_obj = hashlib.new(algorithm)
+    password_salted = salt + password
+    hash_obj.update(password_salted.encode('utf-8'))
+    password_hash = hash_obj.hexdigest()
+    password_db_string = "$".join([algorithm, salt, password_hash])
+
+    # Convert file into appropriate format
+    # Unpack flask obj
+    filename = file_obj.filename
+
+    # Compute base name
+    stem = uuid.uuid4().hex
+    suffix = pathlib.Path(filename).suffix.lower()
+    uuid_basename = f"{stem}{suffix}"
+
+    # Save to disk
+    path = insta485.app.config["UPLOAD_FOLDER"]/uuid_basename
+    file_obj.save(path)
+
+    # Insert into database
+    connection.execute(
+        "INSERT INTO "
+        "users(username, fullname, email, filename, password) "
+        " VALUES (?,?,?,?,?)",
+        (username, full_name, email, filename, password_db_string, )
+    )
+
+    # Log new user in, set session cookie
+    session['user'] = username
+
+
+# Various post requests from accounts with operation values 
 @insta485.app.route('/accounts/', methods=['POST'])
 def post_accounts():
-    """All /accounts/ POST requests"""
+    """All /accounts/?target= POST requests"""
     operation = request.values.get('operation')
     if operation == "login":
         login()
     
+    if operation == "create":
+        create_account()
     else:
         return redirect(url_for('show_index'))
     
