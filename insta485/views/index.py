@@ -13,15 +13,6 @@ import flask
 from flask import (session, redirect, url_for, render_template, request, abort)
 import insta485
 
-# @insta485.app.route('/uploads/<path:filename>')
-# def file_url(filename):
-#     """Return picture."""
-#     #if 'username' in flask.session:
-#     #TODO check file permissions, cookies
-#     return flask.send_from_directory(insta485.app.config['UPLOAD_FOLDER'],
-#                                          filename, as_attachment=True)
-#     flask.abort(404)
-
 @insta485.app.route('/')
 def show_index():
     """Display / route."""
@@ -100,7 +91,6 @@ def show_index():
             post['user_likes_it'] = True
         else: 
             post['user_likes_it'] = False
-
 
 
     # Add database info to context
