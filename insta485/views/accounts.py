@@ -68,17 +68,28 @@ def login():
     # Set session cookie w/ username
     session['user'] = username
 
+# Can't be in post_accounts because not allowed to modify logout: name=operation
+@insta485.app.route('/accounts/logout/', methods=["POST"])
+def logout():
+    """POST logout of account request"""
+    user = session.get('user')
+    
+    # Error somehwere if user is not logged in, safety
+    if user:
+        session.clear()
+        
+    return redirect(url_for('is_logged'))
+
 @insta485.app.route('/accounts/create', methods=['GET'])
 def create_account():
     #TODO: ALL OF IT
-    return render_template("login.html")
+    return render_template("login.html") 
 
 @insta485.app.route('/accounts/', methods=['POST'])
 def post_accounts():
     """All /accounts/ POST requests"""
-    # TODO Confused by what it means 'redirect to URL' after completeing action
     operation = request.values.get('operation')
-    if operation is "login":
+    if operation == "login":
         login()
     
     else:
