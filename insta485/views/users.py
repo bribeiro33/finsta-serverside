@@ -1,8 +1,7 @@
 
 """
 Insta485 users view.
-
-
+   
 
 URLs include:
 /users/<user_url_slug>/
