@@ -16,9 +16,14 @@
         </header>
         <div>
             <h1>Discover People</h1>
-            {% for account in not_following %}
+            {% for account in users %}
                 <img src="{{account.user_img_url}}" alt="followers's icon">
                 <p><a href="/users/{{account.username}}/">{{account.username}}</a></p>
+                <form action="/explore/?target=explore.html" method="post" enctype="multipart/form-data">
+                    <input type="submit" name="follow" value="follow"/>
+                    <input type="hidden" name="username" value="{{following.username}}"/>
+                    <input type="hidden" name="operation" value="follow"/>
+                </form>
             {% endfor %}
         </div>
     </body>
