@@ -6,3 +6,6 @@ from insta485.views.users import user_page
 from insta485.views.followers import show_followers
 from insta485.views.following import show_following
 from insta485.views.explore import explore
+from insta485.views.likes import like_action
+from insta485.views.comments import comment_action
+from insta485.views.uploads import file_url

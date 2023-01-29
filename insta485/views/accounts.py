@@ -274,10 +274,10 @@ def delete_account():
         "WHERE owner = ?",
         (session['user'], )
     )
-    post_files = cur_profilepic.fetchall()
+    post_files = cur_posts.fetchall()
     # Delete all post paths
     for post_file in post_files:
-        post_path = insta485.app.config["UPLOAD_FOLDER"]/post_file
+        post_path = insta485.app.config["UPLOAD_FOLDER"]/post_file['filename']
         os.remove(post_path)
 
     # Delete all assoc entries by deleting 'user' entry, 

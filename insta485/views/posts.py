@@ -13,7 +13,6 @@ import uuid
 import pathlib
 import os
 import insta485
-from insta485 import model
 import arrow
 
 @insta485.app.route('/posts/<postid_url_slug>/', methods=['GET'])
