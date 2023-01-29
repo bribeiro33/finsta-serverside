@@ -47,7 +47,7 @@ def explore():
         "SELECT username2 "
         "FROM following "
         "WHERE username1=?)",
-        (user, user)
+        (user, user, )
     )
     all_users = cur.fetchall()
     

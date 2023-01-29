@@ -29,7 +29,7 @@ def user_page(user_url_slug):
         abort(404)
 
     # Set var using for context and initialize ready keys
-    user = []
+    user = {}
     user['logname'] = session['user']
     user['username'] = user_url_slug
 

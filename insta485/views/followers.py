@@ -62,7 +62,7 @@ def show_followers(user_url_slug):
             (user, fol['username'], )
         )
 
-        name = cur.fetchone()['username2']
+        name = cur.fetchone()
         if name:
             fol['logname_follows_username'] = True
         else:
