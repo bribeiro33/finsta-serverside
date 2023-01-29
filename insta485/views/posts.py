@@ -133,8 +133,8 @@ def post_delete():
     connection = insta485.model.get_db()
     cur_file = connection.execute(
         "SELECT owner, filename "
-        "FROM post "
-        "WHERE post_id = ?",
+        "FROM posts "
+        "WHERE postid = ?",
         (postid, )
     )
     post = cur_file.fetchone()
@@ -164,13 +164,11 @@ def post_action():
         post_create()
     elif operation == 'delete':
         post_delete()
-    else:
-        return redirect(url_for('user_page'))
     
     # Redirect to what target arg equals in from's action URL 
     target_url = request.args.get('target')
 
-    # For whatever reason, when ?target=/, target evaluates to None
+    # If target not set, redirect to /users/<logname>/
     if not target_url:
-        target_url = "/"
+        target_url = url_for('user_page', user_url_slug=session['user'])
     return redirect(target_url)
