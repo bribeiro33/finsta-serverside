@@ -167,3 +167,11 @@ def post_action():
         post_delete()
     else:
         return redirect(url_for('user_page'))
+    
+    # Redirect to what target arg equals in from's action URL 
+    target_url = request.args.get('target')
+
+    # For whatever reason, when ?target=/, target evaluates to None
+    if not target_url:
+        target_url = "/"
+    return redirect(target_url)

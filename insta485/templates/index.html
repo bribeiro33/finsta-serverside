@@ -8,62 +8,57 @@
     <title>insta485</title>
 </head>
 <body>
-    <header>
-        <a href="/">
-          <img src="/static/images/logo.png" alt="black and white instagram logo">
-        </a>
-        <a href="/explore/">explore</a>
-        <a href="/users/{{logname}}/">{{logname}}</a>
-      </header>
-    
-    {% for post in posts %}
-      <div class="post">
-          <div class="post-header">
-            <img class="icon" src="{{post.owner_img_url}}" alt="user image"/>
-            <a href="/users/{{post.owner}}/">{{post.owner}}</a>
-            <a href="/posts/{{post.postid}}/">{{post.timestamp}}</a>
-          </div>
-          <img class="post-img" src="{{post.img_url}}" alt="post image"/>
-          <div class="post-feedback">
-            {% if post.likes == 1 %}
-              <p>1 like</p>
-            {% else %}
-              <p>{{post.likes}} likes</p>
-            {% endif %}
-
-            {% for comment in post.comments %}
-              <p><a href="/users/{{comment.owner}}/"><b>{{comment.owner}}</b></a> {{comment.text}}</p>
-            {% endfor %}
-
-            {% if post.user_likes_it %}
-              <form action="/likes/?target=/index.html" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="operation" value="unlike"/>
-                <input type="hidden" name="postid" value="{{post.postid}}"/>
-                <input type="submit" name="unlike" value="unlike"/>
-              </form>
-
-            {% else %}
-              <form action="/likes/?target=/index.html" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="operation" value="like"/>
-                <input type="hidden" name="postid" value="{{post.postid}}"/>
-                <input type="submit" name="like" value="like"/>
-              </form>
-            {% endif %}
-
-            <form action="/comments/?target=/index.html>" method="post" enctype="multipart/form-data">
-              <input type="hidden" name="operation" value="create"/>
-              <input type="hidden" name="postid" value="{{post.postid}}"/>
-              <input type="text" name="text" required/>
-              <input type="submit" name="comment" value="comment"/>
-            </form>
-          </div>
+  <header>
+      <a href="/">
+        <img src="/static/images/logo.png" alt="black and white instagram logo">
+      </a>
+      <a href="/explore/">explore</a>
+      <a href="/users/{{logname}}/">{{logname}}</a>
+  </header>
+  
+  {% for post in posts %}
+    <div class="post">
+        <div class="post-header">
+          <img class="icon" src="{{post.owner_img_url}}" alt="user image"/>
+          <a href="/users/{{post.owner}}/">{{post.owner}}</a>
+          <a href="/posts/{{post.postid}}/">{{post.timestamp}}</a>
         </div>
-    {% endfor %}
-    <!--DELETE AFTER, TESTING ONLY-->
-    <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
-    <form action="{{url_for('logout')}}" method="post" enctype="multipart/form-data">
-      <input type="submit" name="logout" value="Logout"/>
-    </form>
+        <img class="post-img" src="{{post.img_url}}" alt="post image"/>
+        <div class="post-feedback">
+          {% if post.likes == 1 %}
+            <p>1 like</p>
+          {% else %}
+            <p>{{post.likes}} likes</p>
+          {% endif %}
+
+          {% for comment in post.comments %}
+            <p><a href="/users/{{comment.owner}}/"><b>{{comment.owner}}</b></a> {{comment.text}}</p>
+          {% endfor %}
+
+          {% if post.user_likes_it %}
+            <form action="/likes/?target=/index.html" method="post" enctype="multipart/form-data">
+              <input type="hidden" name="operation" value="unlike"/>
+              <input type="hidden" name="postid" value="{{post.postid}}"/>
+              <input type="submit" name="unlike" value="unlike"/>
+            </form>
+
+          {% else %}
+            <form action="/likes/?target=/index.html" method="post" enctype="multipart/form-data">
+              <input type="hidden" name="operation" value="like"/>
+              <input type="hidden" name="postid" value="{{post.postid}}"/>
+              <input type="submit" name="like" value="like"/>
+            </form>
+          {% endif %}
+
+          <form action="/comments/?target=/index.html>" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="operation" value="create"/>
+            <input type="hidden" name="postid" value="{{post.postid}}"/>
+            <input type="text" name="text" required/>
+            <input type="submit" name="comment" value="comment"/>
+          </form>
+        </div>
+      </div>
+  {% endfor %}
 </body>
 </html>
 
