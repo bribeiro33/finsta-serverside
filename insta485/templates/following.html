@@ -23,14 +23,14 @@
                 <p>following</p>
                 <form action="/following/?target=following.html" method="post" enctype="multipart/form-data">
                     <input type="submit" name="unfollow" value="unfollow"/>
-                    <input type="hidden" name="username" value="{{following}}"/>
+                    <input type="hidden" name="username" value="{{following.username}}"/>
                     <input type="hidden" name="operation" value="unfollow"/>
                 </form>
             {% elif not account.logname_follows_username and logname != account.username %}
                 <p>not following</p>
-                <form action="/followers/?target=followers.html" method="post" enctype="multipart/form-data">
+                <form action="/following/?target=following.html" method="post" enctype="multipart/form-data">
                     <input type="submit" name="follow" value="follow"/>
-                    <input type="hidden" name="username" value="{{followers}}"/>
+                    <input type="hidden" name="username" value="{{following.username}}"/>
                     <input type="hidden" name="operation" value="follow"/>
                 </form>
             {% endif %}
