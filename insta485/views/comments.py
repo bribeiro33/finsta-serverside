@@ -13,10 +13,10 @@ import insta485
 @insta485.app.route('/comments/', methods=['POST'])
 def comment_action():
     """POST all /comments/?target= requests - create and delete"""
+    connection = insta485.model.get_db()
     # Get info from form
     operation = request.values.get('operation')
-    postid = request.form['postid']
-    commentid = request.form['commentid']
+    postid = request.values.get('postid')
 
     if operation == 'create':
         text = request.form['text']
@@ -33,8 +33,8 @@ def comment_action():
         )
 
     elif operation == 'delete':
+        commentid = request.form['commentid']
         # Use db to make sure user is comment owner
-        connection = insta485.model.get_db()
         cur_owner = connection.execute(
             "SELECT owner "
             "FROM comments "
