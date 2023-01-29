@@ -94,7 +94,7 @@ def show_index():
 
 
     # Add database info to context
-    context = {"posts": posts}
+    context = {"posts": posts, "logname": user}
     return flask.render_template("index.html", **context)
 
 

@@ -21,7 +21,7 @@
                 <p><a href="/users/{{account.username}}/">{{account.username}}</a></p>
                 <form action="/explore/?target=explore.html" method="post" enctype="multipart/form-data">
                     <input type="submit" name="follow" value="follow"/>
-                    <input type="hidden" name="username" value="{{following.username}}"/>
+                    <input type="hidden" name="username" value="{{account.username}}"/>
                     <input type="hidden" name="operation" value="follow"/>
                 </form>
             {% endfor %}

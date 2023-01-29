@@ -62,5 +62,5 @@ def explore():
         u['user_img_url'] = flask.url_for("file_url", filename=cur_icon.fetchone()['filename'])
     
     # Add database info to context
-    context = {"explore": explore}
+    context = {"users": all_users, "logname": user}
     return flask.render_template("explore.html", **context)
