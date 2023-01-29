@@ -1,23 +1,18 @@
 """
 Insta485 following view.
 
-
 URLs include:
 /users/<user_url_slug>/following/
 """
-# import flask
-# from flask import session, redirect, url_for
-# import insta485
+
 import flask
 from flask import (session, redirect, url_for, render_template, request, abort)
 import insta485
-
 
 #same as following.py
 @insta485.app.route('/users/<user_url_slug>/following/', methods=["GET"])
 def show_following(user_url_slug):
     """Display following route."""
-
     # Check if user's logged in, go to log in page if not
     if "user" not in session:
         return redirect(url_for("login_page"))
@@ -89,8 +84,7 @@ def show_following(user_url_slug):
 #not from followers! the POST request!
 @insta485.app.route('/following/', methods=["POST"])
 def change_following():
-    """Change following route: ALL /following/?target=URL POST requests"""
-
+    """Change following route: ALL /following/?target=URL POST requests."""
     # Check if user's logged in, go to log in page if not
     if "user" not in session:
         return redirect(url_for("login_page"))

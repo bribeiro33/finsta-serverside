@@ -1,7 +1,6 @@
 """
 Insta485 accounts view.
 
-
 URLs include:
 /accounts/login/
 /accounts/logout/
@@ -21,8 +20,7 @@ import insta485
 # ============================ Login/out ===================================
 @insta485.app.route('/accounts/login/', methods=["GET"])
 def login_page():
-    """GET if user logged in and login page"""
-
+    """GET if user logged in and login page."""
     # If user is logged in, redirect to home/index
     if "user" in session:
         return redirect(url_for("show_index"))
@@ -31,7 +29,7 @@ def login_page():
     return render_template("login.html")
 
 def login():
-    """POST user's login info"""
+    """POST user's login info."""
     # Recieve user info from form in login.html
     username = request.values.get('username')
     submitted_password = request.values.get('password')
@@ -76,7 +74,7 @@ def login():
 # Can't be in post_accounts because no target arg
 @insta485.app.route('/accounts/logout/', methods=["POST"])
 def logout():
-    """POST logout of account request"""
+    """POST logout of account request."""
     user = session.get('user')
 
     # Error somehwere if user is not logged in here, safety
@@ -90,13 +88,13 @@ def logout():
 # Renders the create an account page, redirect to edit if logged in
 @insta485.app.route('/accounts/create/', methods=['GET'])
 def create_page():
-    """GET create account page"""
+    """GET create account page."""
     if "user" in session:
         redirect(url_for('edit.html'))
     return render_template('create.html')
 
 def create_account():
-    """POST created account"""
+    """POST created account."""
     # Get information from form on create page
     username = request.form['username']
     password = request.form['password']
@@ -158,7 +156,7 @@ def create_account():
 # Renders the edit your account page, redirect to edit if logged in
 @insta485.app.route('/accounts/edit/', methods=['GET'])
 def edit_page():
-    """GET edit account page"""
+    """GET edit account page."""
     # Query db for logged in user's current info
     connection = insta485.model.get_db()
     cur_user = connection.execute(
@@ -179,7 +177,7 @@ def edit_page():
     return render_template('edit.html', **context)
 
 def edit_account():
-    """POST edits to user's account"""
+    """POST edits to user's account."""
     # Check that user is logged in
     if "user" not in session:
         abort(403)
@@ -241,7 +239,7 @@ def edit_account():
 # ============================ Delete =====================================
 @insta485.app.route('/accounts/delete/', methods=['GET'])
 def delete_page():
-    """GET delete account page, redirects to login if no cookies"""
+    """GET delete account page, redirects to login if no cookies."""
     user = session['user']
     if not user:
         return redirect(url_for("login_page"))
@@ -249,7 +247,7 @@ def delete_page():
     return render_template('delete.html', **context)
 
 def delete_account():
-    """POST delete user account request"""
+    """POST delete user account request."""
     # Abort if user not logged in
     if "user" not in session:
         abort(403)
@@ -297,13 +295,13 @@ def delete_account():
 # ======================== Change Password ================================
 @insta485.app.route('/accounts/password/', methods=['GET'])
 def password_page():
-    """GET edit password page, redirects to login if no cookies"""
+    """GET edit password page, redirects to login if no cookies."""
     if "user" not in session:
         return redirect(url_for("login_page"))
     return render_template('password.html')
 
 def edit_password_account():
-    """POST password change after user verification and formatting new pass"""
+    """POST password change after user verification and formatting new pass."""
     # Abort forbidden if user not logged in
     if "user" not in session:
         abort(403)
@@ -370,7 +368,7 @@ def edit_password_account():
 # Various post requests from accounts with operation values
 @insta485.app.route('/accounts/', methods=['POST'])
 def post_accounts():
-    """All /accounts/?target= POST requests"""
+    """All /accounts/?target= POST requests."""
     operation = request.values.get('operation')
     if operation == "login":
         login()

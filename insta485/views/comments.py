@@ -1,8 +1,6 @@
 """
 Insta485 comment actions view.
 
-
-
 URLs include:
 /comments/
 """
@@ -11,7 +9,7 @@ import insta485
 
 @insta485.app.route('/comments/', methods=['POST'])
 def comment_action():
-    """POST all /comments/?target= requests - create and delete"""
+    """POST all /comments/?target= requests - create and delete."""
     connection = insta485.model.get_db()
     # Get info from form
     operation = request.values.get('operation')

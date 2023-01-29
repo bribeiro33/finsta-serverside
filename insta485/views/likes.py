@@ -1,8 +1,6 @@
 """
 Insta485 like button view.
 
-
-
 URLs include:
 /likes/
 """
@@ -11,7 +9,7 @@ import insta485
 
 @insta485.app.route('/likes/', methods=['POST'])
 def like_action():
-    """POST all /likes/?target= requests - like and dislike"""
+    """POST all /likes/?target= requests - like and dislike."""
     # Get type of operation from form depending on button pressed
     operation = request.values.get('operation')
     # Get postid from form

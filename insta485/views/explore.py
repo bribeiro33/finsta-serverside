@@ -1,17 +1,12 @@
 """
 Insta485 explore view.
 
-
 URLs include:
 /explore/
 """
-# import flask
-# from flask import session, redirect, url_for
-# import insta485
 import flask
 from flask import (session, redirect, url_for)
 import insta485
-
 
 #same as following.py
 @insta485.app.route('/explore/', methods=["GET"])

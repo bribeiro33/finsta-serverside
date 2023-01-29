@@ -1,23 +1,17 @@
 """
 Insta485 followers view.
 
-
 URLs include:
 /users/<user_url_slug>/followers/
 """
-# import flask
-# from flask import session, redirect, url_for
-# import insta485
 import flask
 from flask import (session, redirect, url_for, render_template, abort)
 import insta485
-
 
 #same as following.py
 @insta485.app.route('/users/<user_url_slug>/followers/', methods=["GET"])
 def show_followers(user_url_slug):
     """Display followers route."""
-
     # Check if user's logged in, go to log in page if not
     if "user" not in session:
         return redirect(url_for("login_page"))
@@ -25,7 +19,7 @@ def show_followers(user_url_slug):
     # Connect to database
     connection = insta485.model.get_db()
     user = session["user"]
-    
+
     # Abort if user_slug is not in db
     cur_user = connection.execute(
         "SELECT username "
@@ -79,7 +73,6 @@ def show_followers(user_url_slug):
         )
         fol['user_img_url'] = flask.url_for("file_url",
             filename=cur_icon.fetchone()['filename'])
-
 
     context = {'followers': f_c,
         "logname": user_url_slug}
