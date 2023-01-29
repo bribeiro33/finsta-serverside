@@ -6,6 +6,8 @@ URLs include:
 """
 import flask
 import insta485
+
+
 @insta485.app.route('/uploads/<path:filename>')
 def file_url(filename):
     """Return correct picture filepath."""
@@ -14,7 +16,7 @@ def file_url(filename):
         flask.abort(403)
 
     file_ur = flask.send_from_directory(insta485.app.config['UPLOAD_FOLDER'],
-                                         filename, as_attachment=True)
+                                        filename, as_attachment=True)
     # Abort if user tries to access file that doesn't exist
     if not file_ur:
         flask.abort(404)

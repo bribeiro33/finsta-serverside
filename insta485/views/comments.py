@@ -7,6 +7,7 @@ URLs include:
 from flask import (session, redirect, request, abort)
 import insta485
 
+
 @insta485.app.route('/comments/', methods=['POST'])
 def comment_action():
     """POST all /comments/?target= requests - create and delete."""
@@ -19,7 +20,7 @@ def comment_action():
         # Abort if user tries to create an empty comment
         if text == '':
             abort(400)
-        #POST new comment
+        # POST new comment
         connection.execute(
             "INSERT INTO "
             "comments(owner, postid, text) "

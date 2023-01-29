@@ -5,12 +5,11 @@ URLs include:
 /posts/
 /posts/<postid_url_slug>/
 """
-import uuid
-import pathlib
 import os
 import flask
 from flask import (session, redirect, url_for, render_template, request, abort)
 import insta485
+
 
 @insta485.app.route('/posts/<postid_url_slug>/', methods=['GET'])
 def post_page(postid_url_slug):
@@ -37,6 +36,7 @@ def post_page(postid_url_slug):
     post['logname'] = user
     return render_template("post.html", **post)
 
+
 def post_create():
     """Post a new post."""
     # Abort (backup) if user not logged in
@@ -49,18 +49,8 @@ def post_create():
     if not file_obj:
         abort(400)
 
-    # Format new post pic
-    # Unpack flask obj
-    filename = file_obj.filename
-
-    # Compute base name
-    stem = uuid.uuid4().hex
-    suffix = pathlib.Path(filename).suffix.lower()
-    uuid_basename = f"{stem}{suffix}"
-
-    # Save to disk
-    path = insta485.app.config["UPLOAD_FOLDER"]/uuid_basename
-    file_obj.save(path)
+    # Store new post pic on disk
+    uuid_basename = insta485.model.store_pic(file_obj)
 
     # Insert into database
     connection.execute(
@@ -69,6 +59,7 @@ def post_create():
         "VALUES (?,?)",
         (uuid_basename, session['user'], )
     )
+
 
 def post_delete():
     """Post a post deletion."""
@@ -105,6 +96,7 @@ def post_delete():
         "WHERE postid = ?",
         (postid, )
     )
+
 
 @insta485.app.route('/posts/', methods=['POST'])
 def post_action():

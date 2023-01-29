@@ -8,6 +8,7 @@ URLs include:
 from flask import (session, redirect, url_for, render_template, abort)
 import insta485
 
+
 @insta485.app.route('/users/<user_url_slug>/', methods=['GET'])
 def user_page(user_url_slug):
     """GET the user's page given the url slug."""

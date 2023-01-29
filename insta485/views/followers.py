@@ -4,11 +4,10 @@ Insta485 followers view.
 URLs include:
 /users/<user_url_slug>/followers/
 """
-import flask
 from flask import (session, redirect, url_for, render_template, abort)
 import insta485
 
-#same as following.py
+
 @insta485.app.route('/users/<user_url_slug>/followers/', methods=["GET"])
 def show_followers(user_url_slug):
     """Display followers route."""
@@ -38,11 +37,11 @@ def show_followers(user_url_slug):
         "WHERE username2=?",
         (user_url_slug, )
     )
-    #username1 follows username2
-    #the above gets all the rows of column 'username1' where username1
+    # username1 follows username2
+    # the above gets all the rows of column 'username1' where username1
     # follows the user
 
-    #loop through all followers
+    # loop through all followers
     # [{username1: golpari, username2: bdreyer},
     # {username1:bdreyer. username2: golpari}]
     f_c = cur.fetchall()
@@ -51,29 +50,8 @@ def show_followers(user_url_slug):
         fol['username'] = fol['username1']
 
         # Check if user follows the people in the followers list
-        cur = connection.execute(
-            "SELECT username2 "
-            "FROM following "
-            "WHERE username1=? AND username2=?",
-            (user, fol['username'], )
-        )
-
-        name = cur.fetchone()
-        if name:
-            fol['logname_follows_username'] = True
-        else:
-            fol['logname_follows_username'] = False
-
         # Get icon
-        cur_icon = connection.execute(
-            "SELECT filename "
-            "FROM users "
-            "WHERE username=?",
-            (fol['username'], )
-        )
-        fol['user_img_url'] = flask.url_for("file_url",
-            filename=cur_icon.fetchone()['filename'])
+        insta485.model.check_follower_get_icon(user, fol, connection)
 
-    context = {'followers': f_c,
-        "logname": user_url_slug}
+    context = {'followers': f_c, "logname": user_url_slug}
     return render_template("followers.html", **context)

@@ -4,12 +4,11 @@ Insta485 following view.
 URLs include:
 /users/<user_url_slug>/following/
 """
-
-import flask
 from flask import (session, redirect, url_for, render_template, request, abort)
 import insta485
 
-#same as following.py
+
+# same as following.py
 @insta485.app.route('/users/<user_url_slug>/following/', methods=["GET"])
 def show_following(user_url_slug):
     """Display following route."""
@@ -22,14 +21,14 @@ def show_following(user_url_slug):
     connection = insta485.model.get_db()
 
     # Abort if user_slug is not in db
-    cur_user = connection.execute(
+    cur_user_slug = connection.execute(
         "SELECT username "
         "FROM users "
         "WHERE username = ?",
         (user_url_slug, )
     )
-    dawg = cur_user.fetchone()
-    if not dawg:
+    user_slug = cur_user_slug.fetchone()
+    if not user_slug:
         abort(404)
 
     # get the followings of username1 where username2
@@ -40,11 +39,11 @@ def show_following(user_url_slug):
         "WHERE username1=?",
         (user_url_slug, )
     )
-    #username1 follows username2
-    #the above gets all the rows of column 'username1'
+    # username1 follows username2
+    # the above gets all the rows of column 'username1'
     # where username1 follows the user
 
-    #loop through all followers
+    # loop through all followers
     # [{username1: golpari, username2: bdreyer},
     # {username1:bdreyer. username2: golpari}]
     f_c = cur.fetchall()
@@ -53,35 +52,14 @@ def show_following(user_url_slug):
         fol['username'] = fol['username2']
 
         # Check if user is following the people in the following list
-        cur = connection.execute(
-            "SELECT username2 "
-            "FROM following "
-            "WHERE username1=? AND username2=?",
-            (user, fol['username'], )
-        )
-
-        name = cur.fetchone()
-        if name:
-            fol['logname_follows_username'] = True
-        else:
-            fol['logname_follows_username'] = False
-
         # Get icon
-        cur_icon = connection.execute(
-            "SELECT filename "
-            "FROM users "
-            "WHERE username=?",
-            (fol['username'], )
-        )
-        fol['user_img_url'] = flask.url_for("file_url",
-            filename=cur_icon.fetchone()['filename'])
+        insta485.model.check_follower_get_icon(user, fol, connection)
 
-
-    context = {'following': f_c,
-        "logname": user_url_slug}
+    context = {'following': f_c, "logname": user_url_slug}
     return render_template("following.html", **context)
 
-#not from followers! the POST request!
+
+# not from followers! the POST request!
 @insta485.app.route('/following/', methods=["POST"])
 def change_following():
     """Change following route: ALL /following/?target=URL POST requests."""
@@ -109,7 +87,7 @@ def change_following():
 
     operation = request.values.get('operation')
 
-    #find when user follows otheruser, and get the entire row from the table
+    # find when user follows otheruser, and get the entire row from the table
     cur = connection.execute(
         "SELECT * "
         "FROM following "
@@ -118,27 +96,25 @@ def change_following():
     )
     folling = cur.fetchall()
 
-
     if operation == 'follow':
-        #tries to follow a user that they already follow
+        # tries to follow a user that they already follow
         if folling:
             abort(409)
 
-        #otherwise just follow the account!
+        # otherwise just follow the account!
         else:
             connection.execute(
                 "INSERT INTO following(username1, username2) VALUES "
                 "(?, ?)", (logname, username, )
             )
 
-
     if operation == 'unfollow':
-        #tries to unfollow a user that they do not follow
+        # tries to unfollow a user that they do not follow
         if not folling:
             abort(409)
-        #otherwise just unfollow the account!
+        # otherwise just unfollow the account!
         else:
-            #delete username1 from following username2
+            # delete username1 from following username2
             connection.execute(
                 "DELETE FROM following "
                 "WHERE username1=? AND username2=?",
@@ -146,8 +122,8 @@ def change_following():
             )
 
     targeturl = request.args.get("target")
-    #redirect to target if it is set
+    # redirect to target if it is set
     if targeturl:
         return redirect(targeturl)
-    #redirect to index if no target specified
+    # redirect to index if no target specified
     return redirect(url_for('show_index'))

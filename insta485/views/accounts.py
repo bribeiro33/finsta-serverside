@@ -17,6 +17,7 @@ import flask
 from flask import (session, redirect, url_for, render_template, request, abort)
 import insta485
 
+
 # ============================ Login/out ===================================
 @insta485.app.route('/accounts/login/', methods=["GET"])
 def login_page():
@@ -27,6 +28,7 @@ def login_page():
 
     # If user is not logged in, render login page
     return render_template("login.html")
+
 
 def login():
     """POST user's login info."""
@@ -71,6 +73,7 @@ def login():
     target_url = request.args.get('target')
     type(target_url)
 
+
 # Can't be in post_accounts because no target arg
 @insta485.app.route('/accounts/logout/', methods=["POST"])
 def logout():
@@ -85,6 +88,8 @@ def logout():
     return redirect(url_for('login_page'))
 
 # ============================ Create =====================================
+
+
 # Renders the create an account page, redirect to edit if logged in
 @insta485.app.route('/accounts/create/', methods=['GET'])
 def create_page():
@@ -92,6 +97,7 @@ def create_page():
     if "user" in session:
         redirect(url_for('edit.html'))
     return render_template('create.html')
+
 
 def create_account():
     """POST created account."""
@@ -103,7 +109,7 @@ def create_account():
     file_obj = request.files['file']
 
     # If something hasn't been filled out, abort
-    if not(username and password and full_name and email and file_obj):
+    if not (username and password and full_name and email and file_obj):
         abort(400)
 
     # If username already exists, abort
@@ -153,6 +159,8 @@ def create_account():
     session['user'] = username
 
 # ============================ Edit =====================================
+
+
 # Renders the edit your account page, redirect to edit if logged in
 @insta485.app.route('/accounts/edit/', methods=['GET'])
 def edit_page():
@@ -170,11 +178,12 @@ def edit_page():
         abort(403)
 
     # Fix file path to work w/ flask
-    user_profile['filename'] = flask.url_for("file_url",
-        filename=user_profile['filename'])
+    file_prof = user_profile['filename']
+    user_profile['filename'] = flask.url_for("file_url", filename=file_prof)
 
-    context = {"user": user_profile}
+    context = {"user": user_profile, "logname": session['user'], }
     return render_template('edit.html', **context)
+
 
 def edit_account():
     """POST edits to user's account."""
@@ -189,7 +198,7 @@ def edit_account():
     file_obj = request.files['file']
 
     # Abort if required fields are empty
-    if not(full_name and email):
+    if not (full_name and email):
         abort(400)
 
     # Update full_name and email fields
@@ -216,17 +225,7 @@ def edit_account():
         os.remove(oldpath)
 
         # Format new profile pic
-        # Unpack flask obj
-        filename = file_obj.filename
-
-        # Compute base name
-        stem = uuid.uuid4().hex
-        suffix = pathlib.Path(filename).suffix.lower()
-        uuid_basename = f"{stem}{suffix}"
-
-        # Save to disk
-        path = insta485.app.config["UPLOAD_FOLDER"]/uuid_basename
-        file_obj.save(path)
+        uuid_basename = insta485.model.store_pic(file_obj)
 
         # Insert into database
         connection.execute(
@@ -237,14 +236,17 @@ def edit_account():
         )
 
 # ============================ Delete =====================================
+
+
 @insta485.app.route('/accounts/delete/', methods=['GET'])
 def delete_page():
     """GET delete account page, redirects to login if no cookies."""
     user = session['user']
     if not user:
         return redirect(url_for("login_page"))
-    context = {"logname" : user}
+    context = {"logname": user}
     return render_template('delete.html', **context)
+
 
 def delete_account():
     """POST delete user account request."""
@@ -293,12 +295,16 @@ def delete_account():
     session.clear()
 
 # ======================== Change Password ================================
+
+
 @insta485.app.route('/accounts/password/', methods=['GET'])
 def password_page():
     """GET edit password page, redirects to login if no cookies."""
     if "user" not in session:
         return redirect(url_for("login_page"))
-    return render_template('password.html')
+    context = {'logname': session['user'], }
+    return render_template('password.html', **context)
+
 
 def edit_password_account():
     """POST password change after user verification and formatting new pass."""
@@ -312,7 +318,7 @@ def edit_password_account():
     new_pass2 = request.form['new_password2']
 
     # Abort if any field is empty
-    if not(old_password and new_pass1 and new_pass2):
+    if not (old_password and new_pass1 and new_pass2):
         abort(400)
 
     # Verfiy submitted old password by hashing it and comparing
@@ -365,6 +371,8 @@ def edit_password_account():
     )
 
 # ======================== POST Operations ================================
+
+
 # Various post requests from accounts with operation values
 @insta485.app.route('/accounts/', methods=['POST'])
 def post_accounts():

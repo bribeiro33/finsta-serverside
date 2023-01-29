@@ -8,6 +8,7 @@ import flask
 from flask import (session, redirect, url_for)
 import insta485
 
+
 @insta485.app.route('/')
 def show_index():
     """Display / route."""
@@ -20,7 +21,6 @@ def show_index():
     connection = insta485.model.get_db()
 
     # Query posts
-    #user = "awdeorio"
     cur = connection.execute(
         "SELECT postid, filename, owner, created "
         "FROM posts "

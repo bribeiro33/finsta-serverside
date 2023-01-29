@@ -1,8 +1,11 @@
 """Insta485 model (database) API."""
+import uuid
+import pathlib
 import sqlite3
 import flask
 import arrow
 import insta485
+
 
 def dict_factory(cursor, row):
     """Convert database row objects to a dictionary keyed on column name.
@@ -11,6 +14,7 @@ def dict_factory(cursor, row):
     template.  Note that this would be inefficient for large queries.
     """
     return {col[0]: row[idx] for idx, col in enumerate(cursor.description)}
+
 
 def get_db():
     """Open a new database connection.
@@ -23,11 +27,11 @@ def get_db():
         flask.g.sqlite_db = sqlite3.connect(str(db_filename))
         flask.g.sqlite_db.row_factory = dict_factory
 
-
         # Foreign keys have to be enabled per-connection.  This is an sqlite3
         # backwards compatibility thing.
         flask.g.sqlite_db.execute("PRAGMA foreign_keys = ON")
     return flask.g.sqlite_db
+
 
 @insta485.app.teardown_appcontext
 def close_db(error):
@@ -41,6 +45,7 @@ def close_db(error):
     if sqlite_db is not None:
         sqlite_db.commit()
         sqlite_db.close()
+
 
 def get_post(user, post, connection):
     """Set up post dictionary with its proper values."""
@@ -57,8 +62,8 @@ def get_post(user, post, connection):
         "WHERE username = ?",
         (post['owner'], )
     )
-    post['owner_img_url'] = flask.url_for("file_url",
-        filename=cur_owner.fetchone()['filename'])
+    icon = cur_owner.fetchone()['filename']
+    post['owner_img_url'] = flask.url_for("file_url", filename=icon)
 
     # Query comments
     cur_comments = connection.execute(
@@ -93,3 +98,47 @@ def get_post(user, post, connection):
         post['user_likes_it'] = True
     else:
         post['user_likes_it'] = False
+
+
+def check_follower_get_icon(user, fol, connection):
+    """Find follower relationship and get follower/followee icon."""
+    # Check if user is following the people in the following list
+    cur = connection.execute(
+        "SELECT username2 "
+        "FROM following "
+        "WHERE username1=? AND username2=?",
+        (user, fol['username'], )
+    )
+
+    name = cur.fetchone()
+    if name:
+        fol['logname_follows_username'] = True
+    else:
+        fol['logname_follows_username'] = False
+
+    # Get icon
+    cur_icon = connection.execute(
+        "SELECT filename "
+        "FROM users "
+        "WHERE username=?",
+        (fol['username'], )
+    )
+    icon = cur_icon.fetchone()['filename']
+    fol['user_img_url'] = flask.url_for("file_url", filename=icon)
+
+
+def store_pic(file_obj):
+    """Store new image on disk after formatting filename."""
+    # Unpack flask obj
+    filename = file_obj.filename
+
+    # Compute base name
+    stem = uuid.uuid4().hex
+    suffix = pathlib.Path(filename).suffix.lower()
+    uuid_basename = f"{stem}{suffix}"
+
+    # Save to disk
+    path = insta485.app.config["UPLOAD_FOLDER"]/uuid_basename
+    file_obj.save(path)
+
+    return uuid_basename

@@ -7,6 +7,7 @@ URLs include:
 from flask import (session, redirect, request, abort)
 import insta485
 
+
 @insta485.app.route('/likes/', methods=['POST'])
 def like_action():
     """POST all /likes/?target= requests - like and dislike."""
@@ -29,7 +30,7 @@ def like_action():
         # Abort if user already liked this post
         if does_like:
             abort(409)
-        #If user hasn't already liked post, create a like for postid by user
+        # If user hasn't already liked post, create a like for postid by user
         connection.execute(
             "INSERT INTO "
             "likes(owner, postid) "
@@ -41,7 +42,7 @@ def like_action():
         # Abort if user already disliked this post
         if not does_like:
             abort(409)
-        #If user hasn't already disliked post, delete a like for postid by user
+        # If user hasn't already disliked post, delete like for postid by user
         connection.execute(
             "DELETE FROM likes "
             "WHERE owner = ? AND postid = ?",
