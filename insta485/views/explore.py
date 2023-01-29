@@ -18,15 +18,12 @@ import insta485
 @insta485.app.route('/explore/', methods=["GET"])
 def explore():
     """Display explore route."""
-
     # Check if user's logged in, go to log in page if not
     if "user" not in session: 
         return redirect(url_for("login_page"))
-
     user = session["user"]
     # Connect to database
     connection = insta485.model.get_db()
-    
     """ # Abort if user_slug is not in db
     cur_user = connection.execute(
         "SELECT username "
@@ -37,7 +34,6 @@ def explore():
     dawg = cur_user.fetchone()
     if not dawg:
         abort(404) """
-    
     #get the usernames of NONFOLLOWED people, so you have to check that they 
     # arent in the user's follows list
     cur = connection.execute(
@@ -51,7 +47,6 @@ def explore():
         (user, user, )
     )
     all_users = cur.fetchall()
-    
     for u in all_users:
         # Get icon 
         cur_icon = connection.execute(
@@ -62,7 +57,6 @@ def explore():
         )
         u['user_img_url'] = flask.url_for("file_url", 
             filename=cur_icon.fetchone()['filename'])
-    
     # Add database info to context
     context = {"users": all_users, "logname": user}
     return flask.render_template("explore.html", **context)

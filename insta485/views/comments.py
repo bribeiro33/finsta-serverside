@@ -17,13 +17,11 @@ def comment_action():
     # Get info from form
     operation = request.values.get('operation')
     postid = request.values.get('postid')
-
     if operation == 'create':
         text = request.form['text']
         # Abort if user tries to create an empty comment
-        if text == '': 
+        if text == '':
             abort(400)
-        
         #POST new comment
         connection.execute(
             "INSERT INTO "
@@ -31,7 +29,6 @@ def comment_action():
             "VALUES (?, ?, ?)",
             (session['user'], postid, text)
         )
-
     elif operation == 'delete':
         commentid = request.form['commentid']
         # Use db to make sure user is comment owner
@@ -43,7 +40,7 @@ def comment_action():
         )
         is_owner = cur_owner.fetchone()
         # Abort if user is not comment owner
-        if not is_owner: 
+        if not is_owner:
             abort(403)
         # Delete comment using commentid
         connection.execute(

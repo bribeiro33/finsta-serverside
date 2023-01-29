@@ -32,25 +32,32 @@
           {% endif %}
 
           {% for comment in post.comments %}
-            <p><a href="/users/{{comment.owner}}/"><b>{{comment.owner}}</b></a> {{comment.text}}</p>
+            <p>
+              <a href="/users/{{comment.owner}}/">
+                <b>{{comment.owner}}</b>
+              </a> {{comment.text}}
+            </p>
           {% endfor %}
 
           {% if post.user_likes_it %}
-            <form action="/likes/?target=/index.html" method="post" enctype="multipart/form-data">
+            <form action="/likes/?target=/index.html" method="post" 
+            enctype="multipart/form-data">
               <input type="hidden" name="operation" value="unlike"/>
               <input type="hidden" name="postid" value="{{post.postid}}"/>
               <input type="submit" name="unlike" value="unlike"/>
             </form>
 
           {% else %}
-            <form action="/likes/?target=/index.html" method="post" enctype="multipart/form-data">
+            <form action="/likes/?target=/index.html" method="post" 
+            enctype="multipart/form-data">
               <input type="hidden" name="operation" value="like"/>
               <input type="hidden" name="postid" value="{{post.postid}}"/>
               <input type="submit" name="like" value="like"/>
             </form>
           {% endif %}
 
-          <form action="/comments/?target=/index.html>" method="post" enctype="multipart/form-data">
+          <form action="/comments/?target=/index.html" method="post" 
+            enctype="multipart/form-data">
             <input type="hidden" name="operation" value="create"/>
             <input type="hidden" name="postid" value="{{post.postid}}"/>
             <input type="text" name="text" required/>

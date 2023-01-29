@@ -35,11 +35,11 @@ def login():
     # Recieve user info from form in login.html
     username = request.values.get('username')
     submitted_password = request.values.get('password')
-    
+
     # If either field is empty, abort
     if not username or not submitted_password:
         abort(400)
-    
+
     # Authenticate user information by checking db
     connection = insta485.model.get_db()
     cur_users = connection.execute(
@@ -49,7 +49,7 @@ def login():
         (username, )
     )
     correct_pass = cur_users.fetchone()
-    
+
     # If username doesn't have a password, abort
     if not correct_pass:
         abort(403)
@@ -57,16 +57,16 @@ def login():
     # Verify password by computing hashed pass w/ SHA512 of submitted password
     #   and comparing it against the db password
     algorithm, salt, db_password = correct_pass['password'].split('$')
-    
+
     # Slightly modified from spec
     hash_obj = hashlib.new(algorithm)
     password_salted = salt + submitted_password
     hash_obj.update(password_salted.encode('utf-8'))
     submitted_password_hash = hash_obj.hexdigest()
-    
+
     if submitted_password_hash != db_password:
         abort(403)
-    
+
     # Set session cookie w/ username
     session['user'] = username
 
@@ -78,12 +78,12 @@ def login():
 def logout():
     """POST logout of account request"""
     user = session.get('user')
-    
+
     # Error somehwere if user is not logged in here, safety
     # Clears cookies
     if user:
         session.clear()
-        
+
     return redirect(url_for('login_page'))
 
 # ============================ Create =====================================
@@ -107,7 +107,7 @@ def create_account():
     # If something hasn't been filled out, abort
     if not(username and password and full_name and email and file_obj):
         abort(400)
-    
+
     # If username already exists, abort
     connection = insta485.model.get_db()
     cur_users = connection.execute(
@@ -168,9 +168,9 @@ def edit_page():
     user_profile = cur_user.fetchone()
     if not user_profile:
         abort(403)
-    
+
     # Fix file path to work w/ flask
-    user_profile['filename'] = flask.url_for("file_url", 
+    user_profile['filename'] = flask.url_for("file_url",
         filename=user_profile['filename'])
 
     context = {"user": user_profile}
@@ -179,9 +179,9 @@ def edit_page():
 def edit_account():
     """POST edits to user's account"""
     # Check that user is logged in
-    if "user" not in session: 
+    if "user" not in session:
         abort(403)
-    
+
     # Get data from form
     # Can't change username, and can't change password on this page
     full_name = request.form['fullname']
@@ -191,7 +191,7 @@ def edit_account():
     # Abort if required fields are empty
     if not(full_name and email):
         abort(400)
-    
+
     # Update full_name and email fields
     connection = insta485.model.get_db()
     connection.execute(
@@ -203,7 +203,7 @@ def edit_account():
 
     # Update profile pic if submitted
     if file_obj:
-        # Delete old profile pic 
+        # Delete old profile pic
         cur_oldfile = connection.execute(
             "SELECT filename "
             "FROM users "
@@ -249,7 +249,7 @@ def delete_page():
 def delete_account():
     """POST delete user account request"""
     # Abort if user not logged in
-    if "user" not in session: 
+    if "user" not in session:
         abort(403)
 
     # Delete all files assoc w/ user
@@ -281,7 +281,7 @@ def delete_account():
         post_path = insta485.app.config["UPLOAD_FOLDER"]/post_file['filename']
         os.remove(post_path)
 
-    # Delete all assoc entries by deleting 'user' entry, 
+    # Delete all assoc entries by deleting 'user' entry,
     #   should work if db set up correctly
     connection.execute(
         "DELETE FROM users "
@@ -296,25 +296,25 @@ def delete_account():
 @insta485.app.route('/accounts/password/', methods=['GET'])
 def password_page():
     """GET edit password page, redirects to login if no cookies"""
-    if "user" not in session: 
+    if "user" not in session:
         return redirect(url_for("login_page"))
     return render_template('password.html')
 
 def edit_password_account():
     """POST password change after user verification and formatting new pass"""
     # Abort forbidden if user not logged in
-    if "user" not in session: 
+    if "user" not in session:
         abort(403)
 
     # Get passwords from form on page
     old_password = request.form['password']
     new_pass1 = request.form['new_password1']
     new_pass2 = request.form['new_password2']
-    
+
     # Abort if any field is empty
     if not(old_password and new_pass1 and new_pass2):
         abort(400)
-    
+
     # Verfiy submitted old password by hashing it and comparing
     #   with hashed one in db
     connection = insta485.model.get_db()
@@ -332,7 +332,7 @@ def edit_password_account():
     # Verify password by computing hashed pass w/ SHA512 of submitted password
     #   and comparing it against the db password
     algorithm, salt, db_pass = hashed_db_pass.split('$')
-    
+
     # Slightly modified from spec
     hash_obj = hashlib.new(algorithm)
     password_salted = salt + old_password
@@ -342,11 +342,11 @@ def edit_password_account():
     # Abort if submitted old pass doesn't match db pass
     if db_pass != hashed_sub_pass:
         abort(403)
-    
+
     # Abort if new passwords don't match
     if new_pass1 != new_pass2:
         abort(401)
-    
+
     # Hash new password before storing in db
     algorithm = 'sha512'
     salt = uuid.uuid4().hex
@@ -365,7 +365,7 @@ def edit_password_account():
     )
 
 # ======================== POST Operations ================================
-# Various post requests from accounts with operation values 
+# Various post requests from accounts with operation values
 @insta485.app.route('/accounts/', methods=['POST'])
 def post_accounts():
     """All /accounts/?target= POST requests"""
@@ -383,7 +383,7 @@ def post_accounts():
     else:
         return redirect(url_for('show_index'))
     
-    # Redirect to what target arg equals in from's action URL 
+    # Redirect to what target arg equals in from's action URL
     target_url = request.args.get('target')
 
     # For whatever reason, when ?target=/, target evaluates to None

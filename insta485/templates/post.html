@@ -28,7 +28,6 @@
             {% else %}
                 <p>{{likes}} likes</p>
             {% endif %}
-            
             {% for comment in comments %}
                 <p><a href="/users/{{comment.owner}}/"><b>{{comment.owner}}</b></a> {{comment.text}}</p>
                 {% if comment.owner == logname %}
@@ -54,7 +53,7 @@
                     <input type="submit" name="like" value="like"/>
                 </form>
             {% endif %}
-            <form action="/comments/?target={{url_for('post_page', postid_url_slug=postid)}}>" method="post" enctype="multipart/form-data">
+            <form action="/comments/?target={{url_for('post_page', postid_url_slug=postid)}}" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="operation" value="create"/>
                 <input type="hidden" name="postid" value="{{postid}}"/>
                 <input type="text" name="text" required/>
