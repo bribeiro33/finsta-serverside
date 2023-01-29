@@ -8,7 +8,6 @@ URLs include:
 # import flask
 # from flask import session, redirect, url_for
 # import insta485
-import arrow
 import flask
 from flask import (session, redirect, url_for, render_template, request, abort)
 import insta485
@@ -20,13 +19,13 @@ def show_following(user_url_slug):
     """Display following route."""
 
     # Check if user's logged in, go to log in page if not
-    if "user" not in session: 
+    if "user" not in session:
         return redirect(url_for("login_page"))
 
     user = session["user"]
     # Connect to database
     connection = insta485.model.get_db()
-    
+
     # Abort if user_slug is not in db
     cur_user = connection.execute(
         "SELECT username "
@@ -38,7 +37,7 @@ def show_following(user_url_slug):
     if not dawg:
         abort(404)
 
-    # get the followings of username1 where username2 
+    # get the followings of username1 where username2
     # is a followedPerson by username1
     cur = connection.execute(
         "SELECT username2 "
@@ -47,17 +46,17 @@ def show_following(user_url_slug):
         (user_url_slug, )
     )
     #username1 follows username2
-    #the above gets all the rows of column 'username1' 
+    #the above gets all the rows of column 'username1'
     # where username1 follows the user
 
-    #loop through all followers 
-    # [{username1: golpari, username2: bdreyer}, 
+    #loop through all followers
+    # [{username1: golpari, username2: bdreyer},
     # {username1:bdreyer. username2: golpari}]
-    f = cur.fetchall()
-    for fol in f:
+    f_c = cur.fetchall()
+    for fol in f_c:
         # Formatting to fit into template name
         fol['username'] = fol['username2']
-        
+
         # Check if user is following the people in the following list
         cur = connection.execute(
             "SELECT username2 "
@@ -72,18 +71,18 @@ def show_following(user_url_slug):
         else:
             fol['logname_follows_username'] = False
 
-        # Get icon 
+        # Get icon
         cur_icon = connection.execute(
             "SELECT filename "
             "FROM users "
             "WHERE username=?",
             (fol['username'], )
         )
-        fol['user_img_url'] = flask.url_for("file_url", 
+        fol['user_img_url'] = flask.url_for("file_url",
             filename=cur_icon.fetchone()['filename'])
 
 
-    context = {'following': f, 
+    context = {'following': f_c,
         "logname": user_url_slug}
     return render_template("following.html", **context)
 
@@ -93,7 +92,7 @@ def change_following():
     """Change following route: ALL /following/?target=URL POST requests"""
 
     # Check if user's logged in, go to log in page if not
-    if "user" not in session: 
+    if "user" not in session:
         return redirect(url_for("login_page"))
 
     logname = session["user"]
@@ -102,7 +101,7 @@ def change_following():
     username = request.form["username"]
     # Connect to database
     connection = insta485.model.get_db()
-    
+
     # Abort if user_slug is not in db
     cur_user = connection.execute(
         "SELECT username "
@@ -113,9 +112,9 @@ def change_following():
     dawg = cur_user.fetchone()
     if not dawg:
         abort(404)
-    
+
     operation = request.values.get('operation')
-        
+
     #find when user follows otheruser, and get the entire row from the table
     cur = connection.execute(
         "SELECT * "
@@ -125,7 +124,7 @@ def change_following():
     )
     folling = cur.fetchall()
 
-    
+
     if operation == 'follow':
         #tries to follow a user that they already follow
         if folling:
@@ -137,8 +136,8 @@ def change_following():
                 "INSERT INTO following(username1, username2) VALUES "
                 "(?, ?)", (logname, username, )
             )
-    
-    
+
+
     if operation == 'unfollow':
         #tries to unfollow a user that they do not follow
         if not folling:
@@ -157,5 +156,4 @@ def change_following():
     if targeturl:
         return redirect(targeturl)
     #redirect to index if no target specified
-    else:
-        return redirect(url_for('show_index'))
+    return redirect(url_for('show_index'))

@@ -6,8 +6,7 @@ Insta485 users view.
 URLs include:
 /users/<user_url_slug>/
 """
-import flask
-from flask import (session, redirect, url_for, render_template, request, abort)
+from flask import (session, redirect, url_for, render_template, abort)
 import insta485
 
 @insta485.app.route('/users/<user_url_slug>/', methods=['GET'])
@@ -16,7 +15,7 @@ def user_page(user_url_slug):
     # Check if user's logged in, go to log in page if not
     if "user" not in session:
         return redirect(url_for("login_page"))
-    
+
     # Check that user_url_slug exists in db, Abort if not
     connection = insta485.model.get_db()
     cur_slug = connection.execute(
@@ -40,13 +39,13 @@ def user_page(user_url_slug):
         "WHERE username1 = ? AND username2 = ?",
         (user['logname'], user_url_slug, )
     )
-    
+
     # If logname follows slug, set var true, false otherwise
     if cur_relation.fetchone():
         user['logname_follows_username'] = True
     else:
         user['logname_follows_username'] = False
-    
+
     # Query db for all the slug's posts
     cur = connection.execute(
         "SELECT postid, filename "
@@ -55,7 +54,7 @@ def user_page(user_url_slug):
         (user_url_slug, )
     )
     user['posts'] = cur.fetchall()
-    
+
     # Correctly find all the post paths
     for post in user['posts']:
         post['img_url'] = url_for("file_url", filename=post['filename'])
@@ -93,6 +92,5 @@ def user_page(user_url_slug):
         (user_url_slug, )
     )
     user['fullname'] = cur.fetchone()['fullname']
-    
-    return render_template("user.html", **user)
 
+    return render_template("user.html", **user)

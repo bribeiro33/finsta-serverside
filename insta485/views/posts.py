@@ -7,13 +7,13 @@ URLs include:
 /posts/
 /posts/<postid_url_slug>/
 """
-import flask
-from flask import (session, redirect, url_for, render_template, request, abort)
 import uuid
 import pathlib
 import os
-import insta485
+import flask
+from flask import (session, redirect, url_for, render_template, request, abort)
 import arrow
+import insta485
 
 @insta485.app.route('/posts/<postid_url_slug>/', methods=['GET'])
 def post_page(postid_url_slug):
@@ -166,11 +166,10 @@ def post_action():
     elif operation == 'delete':
         post_delete()
 
-    # Redirect to what target arg equals in from's action URL 
+    # Redirect to what target arg equals in from's action URL
     target_url = request.args.get('target')
 
     # If target not set, redirect to /users/<logname>/
     if not target_url:
         target_url = url_for('user_page', user_url_slug=session['user'])
     return redirect(target_url)
-

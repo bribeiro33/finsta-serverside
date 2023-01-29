@@ -6,8 +6,7 @@ Insta485 like button view.
 URLs include:
 /likes/
 """
-import flask
-from flask import (session, redirect, url_for, request, abort)
+from flask import (session, redirect, request, abort)
 import insta485
 
 @insta485.app.route('/likes/', methods=['POST'])
@@ -17,7 +16,7 @@ def like_action():
     operation = request.values.get('operation')
     # Get postid from form
     postid = request.form['postid']
-    
+
     # Use db to get logged in user's like or lack thereof for this post
     connection = insta485.model.get_db()
     cur_likes = connection.execute(
@@ -27,10 +26,10 @@ def like_action():
         (session['user'], postid, )
     )
     does_like = cur_likes.fetchone()
-    
+
     if operation == 'like':
         # Abort if user already liked this post
-        if does_like: 
+        if does_like:
             abort(409)
         #If user hasn't already liked post, create a like for postid by user
         connection.execute(
@@ -42,7 +41,7 @@ def like_action():
 
     elif operation == 'unlike':
         # Abort if user already disliked this post
-        if not does_like: 
+        if not does_like:
             abort(409)
         #If user hasn't already disliked post, delete a like for postid by user
         connection.execute(
@@ -51,10 +50,9 @@ def like_action():
             (session['user'], postid, )
         )
 
-    # Redirect to what target arg equals in from's action URL 
+    # Redirect to what target arg equals in from's action URL
     target_url = request.args.get('target')
     # For whatever reason, when ?target=/, target evaluates to None
     if not target_url:
         target_url = "/"
     return redirect(target_url)
-

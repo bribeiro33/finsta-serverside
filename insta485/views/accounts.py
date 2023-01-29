@@ -10,12 +10,12 @@ URLs include:
 /accounts/edit/
 /accounts/password/
 """
-import flask
-from flask import (session, redirect, url_for, render_template, request, abort)
 import uuid
 import pathlib
 import hashlib
 import os
+import flask
+from flask import (session, redirect, url_for, render_template, request, abort)
 import insta485
 
 # ============================ Login/out ===================================
@@ -93,7 +93,7 @@ def create_page():
     """GET create account page"""
     if "user" in session:
         redirect(url_for('edit.html'))
-    return render_template('create.html') 
+    return render_template('create.html')
 
 def create_account():
     """POST created account"""
@@ -130,15 +130,17 @@ def create_account():
 
     # Convert file into appropriate format
     # Unpack flask obj
-    filename = file_obj.filename
+    # filename = file_obj.filename
 
     # Compute base name
-    stem = uuid.uuid4().hex
-    suffix = pathlib.Path(filename).suffix.lower()
-    uuid_basename = f"{stem}{suffix}"
+    # stem = uuid.uuid4().hex
+    # suffix = pathlib.Path(file_obj.filename).suffix.lower()
+    # uuid_basename = f"{stem}{suffix}"
+    # uuid_basename is now called u_b
+    u_b = f"{uuid.uuid4().hex}{pathlib.Path(file_obj.filename).suffix.lower()}"
 
     # Save to disk
-    path = insta485.app.config["UPLOAD_FOLDER"]/uuid_basename
+    path = insta485.app.config["UPLOAD_FOLDER"]/u_b
     file_obj.save(path)
 
     # Insert into database
@@ -146,7 +148,7 @@ def create_account():
         "INSERT INTO "
         "users(username, fullname, email, filename, password) "
         " VALUES (?,?,?,?,?)",
-        (username, full_name, email, filename, password_db_string, )
+        (username, full_name, email, file_obj.filename, password_db_string, )
     )
 
     # Log new user in, set session cookie
@@ -212,7 +214,7 @@ def edit_account():
         )
         oldfile = cur_oldfile.fetchone()['filename']
         oldpath = insta485.app.config["UPLOAD_FOLDER"]/oldfile
-        # TODO: check if works
+        # HERE check if works
         os.remove(oldpath)
 
         # Format new profile pic
@@ -253,7 +255,7 @@ def delete_account():
         abort(403)
 
     # Delete all files assoc w/ user
-    # Query profile pic 
+    # Query profile pic
     connection = insta485.model.get_db()
     cur_profilepic = connection.execute(
         "SELECT filename "
@@ -382,7 +384,7 @@ def post_accounts():
         edit_password_account()
     else:
         return redirect(url_for('show_index'))
-    
+
     # Redirect to what target arg equals in from's action URL
     target_url = request.args.get('target')
 
@@ -390,4 +392,3 @@ def post_accounts():
     if not target_url:
         target_url = "/"
     return redirect(target_url)
-

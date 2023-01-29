@@ -6,8 +6,7 @@ Insta485 comment actions view.
 URLs include:
 /comments/
 """
-import flask
-from flask import (session, redirect, url_for, request, abort)
+from flask import (session, redirect, request, abort)
 import insta485
 
 @insta485.app.route('/comments/', methods=['POST'])
@@ -48,10 +47,9 @@ def comment_action():
             "WHERE commentid = ?",
             (commentid, )
         )
-    # Redirect to what target arg equals in from's action URL 
+    # Redirect to what target arg equals in from's action URL
     target_url = request.args.get('target')
     # For whatever reason, when ?target=/, target evaluates to None
     if not target_url:
         target_url = "/"
     return redirect(target_url)
-

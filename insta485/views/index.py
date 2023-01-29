@@ -10,7 +10,7 @@ URLs include:
 # import insta485
 import arrow
 import flask
-from flask import (session, redirect, url_for, render_template, request, abort)
+from flask import (session, redirect, url_for)
 import insta485
 
 @insta485.app.route('/')
@@ -96,4 +96,3 @@ def show_index():
     # Add database info to context
     context = {"posts": posts, "logname": user}
     return flask.render_template("index.html", **context)
-

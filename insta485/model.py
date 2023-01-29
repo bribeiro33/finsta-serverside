@@ -46,4 +46,3 @@ def close_db(error):
     if sqlite_db is not None:
         sqlite_db.commit()
         sqlite_db.close()
-

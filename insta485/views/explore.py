@@ -8,9 +8,8 @@ URLs include:
 # import flask
 # from flask import session, redirect, url_for
 # import insta485
-import arrow
 import flask
-from flask import (session, redirect, url_for, render_template, request, abort)
+from flask import (session, redirect, url_for)
 import insta485
 
 
@@ -19,22 +18,12 @@ import insta485
 def explore():
     """Display explore route."""
     # Check if user's logged in, go to log in page if not
-    if "user" not in session: 
+    if "user" not in session:
         return redirect(url_for("login_page"))
     user = session["user"]
     # Connect to database
     connection = insta485.model.get_db()
-    """ # Abort if user_slug is not in db
-    cur_user = connection.execute(
-        "SELECT username "
-        "FROM users "
-        "WHERE username = ?",
-        (user_url_slug, )
-    )
-    dawg = cur_user.fetchone()
-    if not dawg:
-        abort(404) """
-    #get the usernames of NONFOLLOWED people, so you have to check that they 
+    #get the usernames of NONFOLLOWED people, so you have to check that they
     # arent in the user's follows list
     cur = connection.execute(
         "SELECT username "
@@ -47,17 +36,16 @@ def explore():
         (user, user, )
     )
     all_users = cur.fetchall()
-    for u in all_users:
-        # Get icon 
+    for u_s in all_users:
+        # Get icon
         cur_icon = connection.execute(
             "SELECT filename "
             "FROM users "
             "WHERE username=?",
-            (u['username'], )
+            (u_s['username'], )
         )
-        u['user_img_url'] = flask.url_for("file_url", 
+        u_s['user_img_url'] = flask.url_for("file_url",
             filename=cur_icon.fetchone()['filename'])
     # Add database info to context
     context = {"users": all_users, "logname": user}
     return flask.render_template("explore.html", **context)
-
