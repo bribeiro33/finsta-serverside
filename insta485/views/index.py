@@ -42,7 +42,6 @@ def show_index():
     )
     posts = cur.fetchall()
     for post in posts:
-        
         # Correct post's img url
         post['img_url'] = flask.url_for("file_url", filename=post['filename'])
 
