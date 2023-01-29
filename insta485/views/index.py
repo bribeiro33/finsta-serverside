@@ -18,14 +18,14 @@ def show_index():
     """Display / route."""
 
     # Check if user's logged in, go to log in page if not
-    if "user" not in session: 
+    if "user" not in session:
         return redirect(url_for("login_page"))
 
     user = session["user"]
     # Connect to database
     connection = insta485.model.get_db()
 
-    
+
     # Query posts
     #user = "awdeorio"
     cur = connection.execute(
@@ -55,7 +55,8 @@ def show_index():
             "WHERE username = ?",
             (post['owner'], )
         )
-        post['owner_img_url'] = flask.url_for("file_url", filename=cur_owner.fetchone()['filename'])
+        post['owner_img_url'] = flask.url_for("file_url",
+            filename=cur_owner.fetchone()['filename'])
 
         # Query comments
         cur_comments = connection.execute(
@@ -88,12 +89,11 @@ def show_index():
         # Will return an entry if user likes the post
         if cur_user_likes.fetchone():
             post['user_likes_it'] = True
-        else: 
+        else:
             post['user_likes_it'] = False
 
 
     # Add database info to context
     context = {"posts": posts, "logname": user}
     return flask.render_template("index.html", **context)
-
 

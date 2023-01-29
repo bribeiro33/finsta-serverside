@@ -15,9 +15,6 @@ def dict_factory(cursor, row):
     """
     return {col[0]: row[idx] for idx, col in enumerate(cursor.description)}
 
-
-
-
 def get_db():
     """Open a new database connection.
 
@@ -34,12 +31,7 @@ def get_db():
         # Foreign keys have to be enabled per-connection.  This is an sqlite3
         # backwards compatibility thing.
         flask.g.sqlite_db.execute("PRAGMA foreign_keys = ON")
-
-
     return flask.g.sqlite_db
-
-
-
 
 @insta485.app.teardown_appcontext
 def close_db(error):
@@ -54,3 +46,4 @@ def close_db(error):
     if sqlite_db is not None:
         sqlite_db.commit()
         sqlite_db.close()
+

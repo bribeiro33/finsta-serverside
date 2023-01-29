@@ -18,7 +18,7 @@ import arrow
 @insta485.app.route('/posts/<postid_url_slug>/', methods=['GET'])
 def post_page(postid_url_slug):
     """GET singular post page, redirect to login if not logged in"""
-    if "user" not in session: 
+    if "user" not in session:
         return redirect(url_for("login_page"))
 
     user = session["user"]
@@ -48,7 +48,8 @@ def post_page(postid_url_slug):
         "WHERE username = ?",
         (post['owner'], )
     )
-    post['owner_img_url'] = flask.url_for("file_url", filename=cur_owner.fetchone()['filename'])
+    post['owner_img_url'] = flask.url_for("file_url",
+        filename=cur_owner.fetchone()['filename'])
 
     # Query comments
     cur_comments = connection.execute(
@@ -81,7 +82,7 @@ def post_page(postid_url_slug):
     # Will return an entry if user likes the post
     if cur_user_likes.fetchone():
         post['user_likes_it'] = True
-    else: 
+    else:
         post['user_likes_it'] = False
 
     post['logname'] = user
@@ -92,13 +93,13 @@ def post_create():
     # Abort (backup) if user not logged in
     if "user" not in session:
         abort(403)
-    
+
     connection = insta485.model.get_db()
     file_obj = flask.request.files["file"]
     # Abort if no file was submitted
-    if not file_obj: 
+    if not file_obj:
         abort(400)
-    
+
     # Format new post pic
     # Unpack flask obj
     filename = file_obj.filename
@@ -125,7 +126,7 @@ def post_delete():
     # Abort (backup) if user not logged in
     if "user" not in session:
         abort(403)
-    
+
     # Get postid of desired post from form
     postid = flask.request.form['postid']
 
@@ -147,7 +148,7 @@ def post_delete():
     filename = post['filename']
     filepath = insta485.app.config["UPLOAD_FOLDER"]/filename
     os.remove(filepath)
-    
+
     # Remove post from database
     connection.execute(
         "DELETE "
@@ -164,7 +165,7 @@ def post_action():
         post_create()
     elif operation == 'delete':
         post_delete()
-    
+
     # Redirect to what target arg equals in from's action URL 
     target_url = request.args.get('target')
 
@@ -172,3 +173,4 @@ def post_action():
     if not target_url:
         target_url = url_for('user_page', user_url_slug=session['user'])
     return redirect(target_url)
+

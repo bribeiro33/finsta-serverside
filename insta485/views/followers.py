@@ -46,9 +46,12 @@ def show_followers(user_url_slug):
         (user_url_slug, )
     )
     #username1 follows username2
-    #the above gets all the rows of column 'username1' where username1 follows the user
+    #the above gets all the rows of column 'username1' where username1 
+    # follows the user
 
-    #loop through all followers [{username1: golpari, username2: bdreyer}, {username1:bdreyer. username2: golpari}]
+    #loop through all followers 
+    # [{username1: golpari, username2: bdreyer}, 
+    # {username1:bdreyer. username2: golpari}]
     f = cur.fetchall()
     for fol in f:
         # Formatting to fit into template name
@@ -75,9 +78,11 @@ def show_followers(user_url_slug):
             "WHERE username=?",
             (fol['username'], )
         )
-        fol['user_img_url'] = flask.url_for("file_url", filename=cur_icon.fetchone()['filename'])
+        fol['user_img_url'] = flask.url_for("file_url", 
+            filename=cur_icon.fetchone()['filename'])
 
 
     context = {'followers': f, 
-        "username": user_url_slug}
+        "logname": user_url_slug}
     return render_template("followers.html", **context)
+

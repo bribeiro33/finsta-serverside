@@ -57,3 +57,4 @@ def comment_action():
     if not target_url:
         target_url = "/"
     return redirect(target_url)
+

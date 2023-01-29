@@ -170,7 +170,8 @@ def edit_page():
         abort(403)
     
     # Fix file path to work w/ flask
-    user_profile['filename'] = flask.url_for("file_url", filename=user_profile['filename'])
+    user_profile['filename'] = flask.url_for("file_url", 
+        filename=user_profile['filename'])
 
     context = {"user": user_profile}
     return render_template('edit.html', **context)
@@ -389,3 +390,4 @@ def post_accounts():
     if not target_url:
         target_url = "/"
     return redirect(target_url)
+

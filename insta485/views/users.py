@@ -95,3 +95,4 @@ def user_page(user_url_slug):
     user['fullname'] = cur.fetchone()['fullname']
     
     return render_template("user.html", **user)
+

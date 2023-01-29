@@ -22,14 +22,14 @@
         
         {% if follower.logname_follows_username %}
           <p>following</p>
-          <form action="/followers/?target=followers.html" method="post" enctype="multipart/form-data">
+          <form action="/following/?target={{url_for('show_followers', user_url_slug=logname)}}" method="post" enctype="multipart/form-data">
             <input type="submit" name="unfollow" value="unfollow"/>
             <input type="hidden" name="username" value="{{follower.username}}"/>
             <input type="hidden" name="operation" value="unfollow"/>
           </form>
         {% elif not follower.logname_follows_username and logname != follower.username %}
           <p>not following</p>
-          <form action="/followers/?target=followers.html" method="post" enctype="multipart/form-data">
+          <form action="/following/?target={{url_for('show_followers', user_url_slug=logname)}}" method="post" enctype="multipart/form-data">
             <input type="submit" name="follow" value="follow"/>
             <input type="hidden" name="username" value="{{follower.username}}"/>
             <input type="hidden" name="operation" value="follow"/>

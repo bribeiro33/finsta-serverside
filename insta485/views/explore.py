@@ -38,7 +38,8 @@ def explore():
     if not dawg:
         abort(404) """
     
-    #get the usernames of NONFOLLOWED people, so you have to check that they arent in the user's follows list
+    #get the usernames of NONFOLLOWED people, so you have to check that they 
+    # arent in the user's follows list
     cur = connection.execute(
         "SELECT username "
         "FROM users "
@@ -59,8 +60,10 @@ def explore():
             "WHERE username=?",
             (u['username'], )
         )
-        u['user_img_url'] = flask.url_for("file_url", filename=cur_icon.fetchone()['filename'])
+        u['user_img_url'] = flask.url_for("file_url", 
+            filename=cur_icon.fetchone()['filename'])
     
     # Add database info to context
     context = {"users": all_users, "logname": user}
     return flask.render_template("explore.html", **context)
+
