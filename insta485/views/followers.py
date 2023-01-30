@@ -53,5 +53,5 @@ def show_followers(user_url_slug):
         # Get icon
         insta485.model.check_follower_get_icon(user, fol, connection)
 
-    context = {'followers': f_c, "logname": user_url_slug}
+    context = {'followers': f_c, "logname": user}
     return render_template("followers.html", **context)

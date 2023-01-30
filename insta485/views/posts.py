@@ -20,6 +20,17 @@ def post_page(postid_url_slug):
     user = session["user"]
     connection = insta485.model.get_db()
 
+    # abort if post doesnt exist
+    cur_post = connection.execute(
+        "SELECT postid "
+        "FROM posts "
+        "WHERE postid = ?",
+        (postid_url_slug, )
+    )
+    dawg = cur_post.fetchone()
+    if not dawg:
+        abort(404)
+
     cur_post = connection.execute(
         "SELECT filename, owner, created "
         "FROM posts "
@@ -69,9 +80,19 @@ def post_delete():
 
     # Get postid of desired post from form
     postid = flask.request.form['postid']
+    connection = insta485.model.get_db()
+    # abort if post doesnt exist
+    cur_post = connection.execute(
+        "SELECT filename "
+        "FROM posts "
+        "WHERE postid = ?",
+        (postid, )
+    )
+    dawg = cur_post.fetchone()
+    if not dawg:
+        abort(404)
 
     # Get post owner and filename from db
-    connection = insta485.model.get_db()
     cur_file = connection.execute(
         "SELECT owner, filename "
         "FROM posts "

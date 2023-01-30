@@ -15,6 +15,7 @@ def comment_action():
     # Get info from form
     operation = request.values.get('operation')
     postid = request.values.get('postid')
+    commentid = request.values.get('commentid')
     if operation == 'create':
         text = request.form['text']
         # Abort if user tries to create an empty comment
@@ -28,6 +29,16 @@ def comment_action():
             (session['user'], postid, text)
         )
     elif operation == 'delete':
+        # abort if comment doesnt exist
+        cur_comment = connection.execute(
+            "SELECT postid "
+            "FROM comments "
+            "WHERE commentid = ?",
+            (commentid, )
+        )
+        dawg = cur_comment.fetchone()
+        if not dawg:
+            abort(404)
         commentid = request.form['commentid']
         # Use db to make sure user is comment owner
         cur_owner = connection.execute(
