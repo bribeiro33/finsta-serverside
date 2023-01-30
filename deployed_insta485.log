@@ -1,23 +1,20 @@
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
-
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 3.133.113.186:80...
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 3.133.113.186:80...
 * Connected to ec2-3-133-113-186.us-east-2.compute.amazonaws.com (3.133.113.186) port 80 (#0)
-> GET / HTTP/1.1
+> GET /accounts/login/ HTTP/1.1
 > Host: ec2-3-133-113-186.us-east-2.compute.amazonaws.com
 > User-Agent: curl/7.84.0
 > Accept: */*
 > 
 * Mark bundle as not supporting multiuse
-< HTTP/1.1 302 FOUND
+< HTTP/1.1 200 OK
 < Server: nginx/1.18.0 (Ubuntu)
-< Date: Sun, 29 Jan 2023 23:28:44 GMT
+< Date: Mon, 30 Jan 2023 00:09:33 GMT
 < Content-Type: text/html; charset=utf-8
-< Content-Length: 219
+< Content-Length: 601
 < Connection: keep-alive
-< Location: /accounts/login/
 < 
-{ [219 bytes data]
-
-100   219  100   219    0     0   1667      0 --:--:-- --:--:-- --:--:--  1752
+{ [601 bytes data]
+100   601  100   601    0     0   5090      0 --:--:-- --:--:-- --:--:--  5366
 * Connection #0 to host ec2-3-133-113-186.us-east-2.compute.amazonaws.com left intact

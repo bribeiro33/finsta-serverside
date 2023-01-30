@@ -1,5 +1,16 @@
-<!doctype html>
-<html lang=en>
-<title>Redirecting...</title>
-<h1>Redirecting...</h1>
-<p>You should be redirected automatically to the target URL: <a href="/accounts/login/">/accounts/login/</a>. If not, click the link.
+
+<!DOCTYPE html>
+<html lang="en">
+<head><title>insta485</title></head>
+<body>
+    <a href="/">Home</a> <!-- might not need "Home"-->
+    <form action="/accounts/?target=/" method="post" enctype="multipart/form-data">
+        <input type="text" name="username" placeholder="username" required/>
+        <input type="password" name="password" placeholder="password" required/>
+        <input type="submit" value="login"/>
+        <input type="hidden" name="operation" value="login"/>
+    </form>
+    <a href="/accounts/create/">
+        <p>Don't have an account?<b>Sign up here!</b></p>
+    </a>
+</html>
